@@ -226,6 +226,9 @@ void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
 float			Unit(float [3], float [3]);
 
+unsigned char*	Texture;	// the texels
+unsigned int    WorldTex;	// the texture object
+
 #ifndef POINT_H
 #define POINT_H
 struct point
@@ -430,6 +433,9 @@ Display( )
 	// since we are using glScalef( ), be sure the normals get unitized:
 
 	glEnable( GL_NORMALIZE );
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, WorldTex);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	glRotatef(360. * Time, 0., 1., 0.);
 	// draw the box object by calling up its display list:
@@ -768,6 +774,24 @@ InitGraphics( )
 	// 	nothing it needs to respond to (which is most of the time)
 	// we don't need to do this for this program, and really should set the argument to NULL
 	// but, this sets us up nicely for doing animation
+
+	int width, height;
+	Texture = BmpToTexture((char*)"worldtex.bmp", &width, &height);
+	if (Texture == NULL)
+		fprintf(stderr, "Cannot open texture '%s'\n", "worldtex.bmp");
+	else
+		fprintf(stderr, "Width = %d ; Height = %d\n", width, height);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &WorldTex);
+	glBindTexture(GL_TEXTURE_2D, WorldTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, Texture);
+
+
 
 	glutIdleFunc( Animate );
 
