@@ -431,7 +431,7 @@ Display( )
 
 	glEnable( GL_NORMALIZE );
 
-
+	glRotatef(360. * Time, 0., 1., 0.);
 	// draw the box object by calling up its display list:
 	OsuSphere(1, 100, 100);
 
