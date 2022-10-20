@@ -32,12 +32,16 @@
 //		6. The transformations to be reset
 //		7. The program to quit
 //
-//	Author:			Joe Graphics
+//	Author:			Taylor Slye
 
 // title of these windows:
 
 const char *WINDOWTITLE = "Taylor Slye Project 3";
 const char *GLUITITLE   = "User Interface Window";
+
+
+float Time;
+#define MS_PER_CYCLE	10000
 
 // what the glui package defines as true and false:
 
@@ -277,6 +281,12 @@ Animate( )
 	// for Display( ) to find:
 
 	// force a call to Display( ) next time it is convenient:
+
+
+	int ms = glutGet(GLUT_ELAPSED_TIME);
+	ms %= MS_PER_CYCLE;
+	Time = (float)ms / (float)MS_PER_CYCLE;
+
 
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
