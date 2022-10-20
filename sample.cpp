@@ -178,6 +178,7 @@ int		DebugOn;				// != 0 means to print debugging info
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
+bool	distortion;
 GLuint	BoxList;				// object display list
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
@@ -323,7 +324,6 @@ Animate( )
 	int ms = glutGet(GLUT_ELAPSED_TIME);
 	ms %= MS_PER_CYCLE;
 	Time = (float)ms / (float)MS_PER_CYCLE;
-
 
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
@@ -899,6 +899,14 @@ Keyboard( unsigned char c, int x, int y )
 
 	switch( c )
 	{
+		case 'd':
+		case 'D':
+			distortion = 1;
+			break;
+		case 'u':
+		case 'U':
+			distortion = 0;
+			break;
 		case 'o':
 		case 'O':
 			WhichProjection = ORTHO;
@@ -1040,6 +1048,7 @@ OsuSphere(float radius, int slices, int stacks)
 
 	for (int ilat = 0; ilat < SphNumLats; ilat++)
 	{
+
 		float lat = -M_PI / 2. + M_PI * (float)ilat / (float)(SphNumLats - 1);	// ilat=0/lat=0. is the south pole
 											// ilat=SphNumLats-1, lat=+M_PI/2. is the north pole
 		float xz = cosf(lat);
@@ -1057,8 +1066,14 @@ OsuSphere(float radius, int slices, int stacks)
 			p->nx = x;
 			p->ny = y;
 			p->nz = z;
-			p->s = (lng + M_PI) / (2. * M_PI);
-			p->t = (lat + M_PI / 2.) / M_PI;
+			if (distortion) {
+				p->s = ((lng + M_PI) / (2. * M_PI));
+				(p->t = (lat + M_PI / 2.) / sin(Time * 3.6));
+			}
+			else {
+				p->s = (lng + M_PI) / (2. * M_PI);
+				p->t = (lat + M_PI / 2.) / M_PI;
+			}
 		}
 	}
 
@@ -1138,6 +1153,7 @@ Reset( )
 	WhichColor = WHITE;
 	WhichProjection = PERSP;
 	Xrot = Yrot = 0.;
+	distortion = 0;
 }
 
 
